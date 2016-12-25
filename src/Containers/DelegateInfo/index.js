@@ -19,6 +19,7 @@ import {
 import { NavigationBar } from '@shoutem/ui/navigation'
 
 import CONST from '../../Helpers/Const'
+import Config from '../../Config'
 import { getTSFromEpochStamp, getDiffInSeconds } from '../../Helpers/Date'
 
 class DelegateInfo extends Component {
@@ -78,14 +79,13 @@ class DelegateInfo extends Component {
   }
 
   startDelegateInfoRefresher = () => {
-    return fetch('http://10.10.11.56:6040/api/getSearch?q=' + this.state.delegateName)
+    return fetch(Config.explorerURL + '/api/getSearch?q=' + this.state.delegateName)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
           ...this.state,
           delegateAddress: responseJson.address,
         })
-
         setTimeout(this.getDelegateInfo, 10 * 1000)
       })
       .catch((error) => {
@@ -94,7 +94,7 @@ class DelegateInfo extends Component {
   }
 
   getDelegateInfo = () => {
-    return fetch('http://10.10.11.56:6040/api/getAccount?address=' + this.state.delegateAddress)
+    return fetch(Config.explorerURL + '/api/getAccount?address=' + this.state.delegateAddress)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -102,7 +102,7 @@ class DelegateInfo extends Component {
           account: responseJson,
         })
       })
-      .then((responseJson) => fetch('http://10.10.11.56:6040/api/delegates/getLastBlocks?publicKey=' + this.state.account.publicKey))
+      .then((responseJson) => fetch(Config.explorerURL + '/api/delegates/getLastBlocks?publicKey=' + this.state.account.publicKey))
       .then((response) => response.json())
       .then((responseJson) => {
         const { blocks } = responseJson
@@ -114,7 +114,7 @@ class DelegateInfo extends Component {
           lastBlock: lastBlock,
         })
       })
-      .then((responseJson) => fetch('http://10.10.11.56:6040/api/delegates/getNextForgers'))
+      .then((responseJson) => fetch('/api/delegates/getNextForgers'))
       .then((response) => response.json())
       .then((responseJson) => {
         const { delegates } = responseJson
