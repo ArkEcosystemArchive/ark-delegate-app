@@ -1,15 +1,15 @@
 
-import React, { Component } from 'react';
-import { createStore, applyMiddleware } from 'redux';
-import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
+import React, { Component } from 'react'
+import { createStore, applyMiddleware } from 'redux'
+import { Provider } from 'react-redux'
+import thunk from 'redux-thunk'
 
-import Reducers from '../../Redux';
+import Reducers from '../../Redux'
 import RootContainer from '../RootContainer'
 
 // create our store
-const createStoreWithMiddleware = applyMiddleware(thunk)(createStore);
-const store = createStoreWithMiddleware(Reducers);
+const createStoreWithMiddleware = applyMiddleware(thunk)(createStore)
+const store = createStoreWithMiddleware(Reducers)
 
 /**
  * Provides an entry point into our application.  Both index.ios.js and index.android.js

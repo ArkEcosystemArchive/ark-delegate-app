@@ -27,8 +27,6 @@ class RootContainer extends Component {
     const { route } = props.scene
     let Screen = null
 
-    console.log(route);
-
     switch (route.key) {
       case 'delegate-picker':
         Screen = DelegatePicker
@@ -69,7 +67,6 @@ class RootContainer extends Component {
   }
 
 }
-
 
 const mapStateToProps = (state) => {
   return {

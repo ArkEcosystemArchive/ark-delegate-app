@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
 import {
   Image,
   ListView,
@@ -8,115 +9,75 @@ import {
   TouchableOpacity,
   Screen,
   Divider,
-} from '@shoutem/ui';
+  ScrollView,
+  TextInput,
+  Button,
+  Text,
+} from '@shoutem/ui'
+import { NavigationBar } from '@shoutem/ui/navigation'
 
-import {
-  NavigationBar,
-} from '@shoutem/ui/navigation';
+import { navigatePush } from '../../Redux'
 
-import { connect } from 'react-redux';
-import { navigatePush } from '../../Redux';
+class DelegatePicker extends Component {
 
-class RestaurantsList extends Component {
   static propTypes = {
-    onButtonPress: React.PropTypes.func,
-  };
-
-  constructor(props) {
-    super(props);
-    this.renderRow = this.renderRow.bind(this);
+    nameSubmit: React.PropTypes.func,
   }
 
-  getRestaurants() {
-    return [{
-      "name": "Gaspar Brasserie",
-      "address": "185 Sutter St, San Francisco, CA 94109",
-      "description": "Gaspar is a delightful French restaurant in San Francisco’s Financial District that is inspired by the romantic, bustling Paris of old.\n\nLocated near famed Union Square, our richly-designed interiors make you feel as if you are truly in Paris and provide the perfect setting for enjoying our exquisite classic and modern French fare such as Duck Leg Confit and always popular Steak Frites.\n\nGaspar is a delightful French restaurant in San Francisco’s Financial District that is inspired by the romantic, bustling Paris of old. Located near famed Union Square, our richly-designed interiors make you feel as if you are truly in Paris and provide the perfect setting for enjoying our exquisite classic and modern French fare such as Duck Leg Confit and always popular Steak Frites.",
-      "url": "gasparbrasserie.com",
-      "image": { "url": "https://shoutem.github.io/restaurants/restaurant-1.jpg" },
-      "mail": "info@gasparbrasserie.com"
-    }, {
-      "name": "Chalk Point Kitchen",
-      "address": "527 Broome St, New York, NY 10013",
-      "description": "Situated in the heart of SoHo, at 527 Broome Street (between Thompson and Sullivan) Chalk Point Kitchen is a 60 seat “market to table” owned by Lower East Side restaurateur, Matt Levine and his indieFORK team.",
-      "url": "",
-      "image": { "url": "https://shoutem.github.io/restaurants/restaurant-2.jpg" },
-      "mail": ""
-    }, {
-      "name": "Kyoto Amber Upper East",
-      "address": "225 Mulberry St, New York, NY 10012",
-      "description": "",
-      "url": "",
-      "image": { "url": "https://shoutem.github.io/restaurants/restaurant-3.jpg" },
-      "mail": ""
-    }, {
-      "name": "Sushi Academy",
-      "address": "",
-      "description": "",
-      "url": "",
-      "image": { "url": "https://shoutem.github.io/restaurants/restaurant-4.jpg" },
-      "mail": ""
-    }, {
-      "name": "Sushibo",
-      "address": "",
-      "description": "",
-      "url": "",
-      "image": { "url": "https://shoutem.github.io/restaurants/restaurant-5.jpg" },
-      "mail": ""
-    }, {
-      "name": "Mastergrill",
-      "address": "",
-      "description": "",
-      "url": "",
-      "image": { "url": "https://shoutem.github.io/restaurants/restaurant-6.jpg" },
-      "mail": ""
-    }]
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      delegateName: ''
+    }
   }
 
-  renderRow(restaurant) {
-    const { onButtonPress } = this.props;
-
-    return (
-      <TouchableOpacity onPress={() => onButtonPress(restaurant)}>
-        <Image
-          styleName="large-banner"
-          source={{ uri: restaurant.image.url }}
-        >
-          <Tile>
-            <Title styleName="md-gutter-bottom">{restaurant.name}</Title>
-            <Subtitle styleName="sm-gutter-horizontal">{restaurant.address}</Subtitle>
-          </Tile>
-        </Image>
-        <Divider styleName="line" />
-      </TouchableOpacity>
-    );
+  handleNameSubmit = () => {
+    this.props.nameSubmit(this.state.delegateName)
   }
 
-  render() {
+  onDelegateNameChange = (delegateName) => {
+    this.setState({
+      delegateName
+    })
+  }
+
+  render () {
+    const { handleNameSubmit } = this.props;
+
     return (
       <Screen>
-        <NavigationBar title="All Restaurants" />
+        <NavigationBar title="Who do you want to stalk?" />
+        <ScrollView>
 
-        <ListView
-          data={this.getRestaurants()}
-          renderRow={restaurant => this.renderRow(restaurant)}
-        />
+          <TextInput 
+            onChangeText={this.onDelegateNameChange} 
+            placeholder={'Delegate name'}
+            autoCapitalize="none"
+            autoCorrect={false}
+            autoFocus={true}
+            // maxLength={12}
+            // onSubmitEditing={this.handleNameSubmit}
+            onEndEditing={this.handleNameSubmit}
+          />
+          <Divider styleName="line" />
+          <Button>
+            <Text>Go</Text>
+          </Button>
+          <Divider styleName="line" />
+
+        </ScrollView>
       </Screen>
-    );
+    )
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  onButtonPress: (restaurant) => {
+  nameSubmit: (delegateName) => {
     dispatch(navigatePush({
-      key: 'DelegatePicker',
-      title: 'DelegatePicker',
-    }, { restaurant }));
+      key: 'delegate-info',
+    }, { delegateName }))
   },
-});
+})
 
-export default connect(
-	undefined,
-	mapDispatchToProps
-)(RestaurantsList);
-
+export default connect(null, mapDispatchToProps)(DelegatePicker)
