@@ -101,16 +101,16 @@ class DelegateInfo extends Component {
           account: responseJson,
         })
       })
-      .then((responseJson) => fetch('http://10.10.11.56:6040/api/delegates/getLastBlock?publicKey=' + this.state.account.address))
+      .then((responseJson) => fetch('http://10.10.11.56:6040/api/delegates/getLastBlocks?publicKey=' + this.state.account.publicKey))
       .then((response) => response.json())
       .then((responseJson) => {
-        let { block } = responseJson
-        let forgedTS = getTSfromEpochStamp(block.timestamp)
-        block.forgedTS = forgedTS
-
+        const { blocks } = responseJson
+        let lastBlock = blocks[0]
+        let forgedTS = getTSfromEpochStamp(lastBlock.timestamp)
+        lastBlock.forgedTS = forgedTS
         this.setState({
           ...this.state,
-          lastBlock: block,
+          lastBlock: lastBlock,
         })
       })
       .then((responseJson) => fetch('http://10.10.11.56:6040/api/delegates/getNextForgers'))
