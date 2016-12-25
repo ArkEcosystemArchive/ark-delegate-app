@@ -19,7 +19,7 @@ import {
 import { NavigationBar } from '@shoutem/ui/navigation'
 
 import CONST from '../../Helpers/Const'
-import { getTSfromEpochStamp, getDiffInSeconds } from '../../Helpers/Date'
+import { getTSFromEpochStamp, getDiffInSeconds } from '../../Helpers/Date'
 
 class DelegateInfo extends Component {
 
@@ -32,6 +32,8 @@ class DelegateInfo extends Component {
 
     this.state = {
       firstFetchDone: false,
+      lastFetchAt: 0,
+      lastFetchAtHuman: '',
 
       // delegateName: props.delegateName,
       delegateName: 'doweig',
@@ -40,10 +42,10 @@ class DelegateInfo extends Component {
       account: null,
 
       lastBlock: null,
-      lastBlockTimeHuman: '',
+      lastBlockAtHuman: '',
 
       nextForgerPosition: 0,
-      nextBlockTimeHuman: '',
+      nextBlockAtHuman: '',
     }
   }
 
@@ -58,19 +60,20 @@ class DelegateInfo extends Component {
         return
       }
 
-      this.setLastBlockTimeHuman()
+      this.refreshAtHuman()
     }, 1000)
   }
 
-  setLastBlockTimeHuman = () => {
-    const now = Date.now()
+  refreshAtHuman = () => {
+    const now = new Date
     this.setState({
       ...this.state,
-      lastBlockTimeHuman: humanizeDuration(getDiffInSeconds(now, this.state.lastBlock.forgedTS)),
+      lastBlockTimeHuman: humanizeDuration(getDiffInSeconds(now, this.state.lastBlock.forgedAt)),
       nextBlockTimeHuman: humanizeDuration(getDiffInSeconds(
         now,
-        this.state.lastBlock.forgedTS + (this.state.nextForgerPosition * CONST.BLOCKTIME_IN_SECONDS * 1000)
+        this.state.lastBlock.forgedAt + (this.state.nextForgerPosition * CONST.BLOCKTIME_IN_SECONDS * 1000)
       )),
+      lastFetchAtHuman: humanizeDuration(getDiffInSeconds(this.state.lastFetchAt, now)),
     })
   }
 
@@ -106,8 +109,8 @@ class DelegateInfo extends Component {
       .then((responseJson) => {
         const { blocks } = responseJson
         let lastBlock = blocks[0]
-        let forgedTS = getTSfromEpochStamp(lastBlock.timestamp)
-        lastBlock.forgedTS = forgedTS
+        let forgedAt = getTSFromEpochStamp(lastBlock.timestamp)
+        lastBlock.forgedAt = forgedAt
         this.setState({
           ...this.state,
           lastBlock: lastBlock,
@@ -121,11 +124,12 @@ class DelegateInfo extends Component {
           ...this.state,
           nextForgerPosition: delegates.indexOf(this.state.account.publicKey),
         })
-        this.setLastBlockTimeHuman()
         this.setState({
           ...this.state,
           firstFetchDone: true,
+          lastFetchAt: new Date,
         })
+        this.refreshAtHuman()
       })
       .catch((error) => {
         console.error(error)
@@ -149,6 +153,14 @@ class DelegateInfo extends Component {
         <ScrollView>
           
           <Screen styleName="paper">
+
+            {/* Debug helper */}
+            <Row>
+              <View>
+                <Text style={{ fontSize: 10 }}>(Last time refreshed {state.lastFetchAtHuman} ago)</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
 
             {/* Forging section */}
             <Row>
