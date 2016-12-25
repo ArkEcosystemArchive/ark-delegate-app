@@ -23,16 +23,37 @@ class DelegateInfo extends Component {
     delegateName: React.PropTypes.string,
   }
 
+  constructor (props) {
+    super(props)
+
+    this.state = {
+      // delegateName: props.delegateName,
+      delegateName: 'doweig',
+      fetching: false,
+      account: null,
+    }
+
+  }
+
+  componentDidMount () {
+    this.getDelegateInfo()
+  }
+
   getDelegateInfo = () => {
-    const { delegateName } = this.props
-    // const delegateName = 'doweig'
+    const { delegateName } = this.state
+
+    this.setState({ ...this.state, fetching: true })
 
     return fetch('http://10.10.11.56:6040/api/getSearch?q=' + delegateName)
       .then((response) => response.json())
       .then((responseJson) => fetch('http://10.10.11.56:6040/api/getAccount?address=' + responseJson.address))
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson)
+        this.setState({
+          ...this.state,
+          fetching: false, 
+          account: responseJson,
+        })
       })
       .catch((error) => {
         console.error(error)
@@ -40,20 +61,59 @@ class DelegateInfo extends Component {
   }
 
   render() {
-    const { delegateName } = this.props
+    const { fetching, delegateName, account } = this.state
 
-    this.getDelegateInfo()
+    if (fetching || !account) {
+      return (
+        <Screen>
+          <Text>Loading...</Text>
+        </Screen>
+      )
+    }
 
     return (
-      <Screen styleName="paper full-screen">
-        <NavigationBar
-          title={delegateName}
-          styleName="clear"
-          animationName="solidify"
-        />
 
+      <Screen>
+        <NavigationBar title={delegateName} />
+        <ScrollView>
+          
+          <Screen styleName="paper">
 
-        <Text>Hey</Text>
+            <Row>
+              <View>
+                <Subtitle>Address</Subtitle>
+                <Text>{account.address}</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+            
+            <Row>
+              <View>
+                <Subtitle>Public Key</Subtitle>
+                <Text>{account.publicKey}</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+
+            <Row>
+              <View>
+                <Subtitle>Produced Blocks</Subtitle>
+                <Text>{account.delegate.producedblocks}</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+
+            <Row>
+              <View>
+                <Subtitle>Missed Blocks</Subtitle>
+                <Text>{account.delegate.missedblocks}</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+
+          </Screen>
+
+        </ScrollView>
       </Screen>
     )
     //     <ScrollView>
@@ -114,7 +174,7 @@ class DelegateInfo extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    delegateName: state.navigationState.routes[1].props.delegateName,
+    // delegateName: state.navigationState.routes[1].props.delegateName,
   }
 }
 
