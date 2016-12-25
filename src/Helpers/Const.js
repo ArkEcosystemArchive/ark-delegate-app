@@ -1,0 +1,6 @@
+
+export default {
+  BLOCKTIME_IN_SECONDS: 8,
+  ACTIVE_DELEGATES: 51,
+  GENESIS_BLOCK_TS: Date.UTC(2016, 4, 24, 17, 0, 0, 0),
+}

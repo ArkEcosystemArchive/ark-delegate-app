@@ -8,7 +8,7 @@
   },
   "dependencies": {
     "@shoutem/ui": "^0.10.2",
-    "humanize": "^0.0.9",
+    "humanize-duration": "^3.10.0",
     "react": "15.4.1",
     "react-native": "0.39.2",
     "react-redux": "^5.0.1",

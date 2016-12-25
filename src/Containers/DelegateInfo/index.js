@@ -1,7 +1,7 @@
 
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import humanize from 'humanize'
+import humanizeDuration from 'humanize-duration'
 
 import {
   ScrollView,
@@ -19,6 +19,7 @@ import {
 import { NavigationBar } from '@shoutem/ui/navigation'
 
 import CONST from '../../Helpers/Const'
+import { getTSfromEpochStamp, getDiffInSeconds } from '../../Helpers/Date'
 
 class DelegateInfo extends Component {
 
@@ -62,21 +63,15 @@ class DelegateInfo extends Component {
   }
 
   setLastBlockTimeHuman = () => {
+    const now = Date.now()
     this.setState({
       ...this.state,
-      lastBlockTimeHuman: humanize.relativeTime(this.state.lastBlock.forgedTS),
-      nextBlockTimeHuman: humanize.relativeTime(
-        humanize.time() + (this.state.nextForgerPosition * CONST.BLOCKTIME_IN_SECONDS)
-      ),
+      lastBlockTimeHuman: humanizeDuration(getDiffInSeconds(now, this.state.lastBlock.forgedTS)),
+      nextBlockTimeHuman: humanizeDuration(getDiffInSeconds(
+        now,
+        this.state.lastBlock.forgedTS + (this.state.nextForgerPosition * CONST.BLOCKTIME_IN_SECONDS * 1000)
+      )),
     })
-  }
-
-  getTSfromEpochStamp (epochStamp) {
-    return Math.floor(
-      new Date(
-        (((CONST.GENESIS_BLOCK_TS / 1000) + epochStamp) * 1000)
-      ).getTime() / 1000
-    )
   }
 
   startDelegateInfoRefresher = () => {
@@ -90,7 +85,7 @@ class DelegateInfo extends Component {
 
         setInterval(() => {
           this.getDelegateInfo(this.state.delegateAddress)
-        }, 5 *1000)
+        }, 5 * 1000)
       })
       .catch((error) => {
         console.error(error)
@@ -110,7 +105,7 @@ class DelegateInfo extends Component {
       .then((response) => response.json())
       .then((responseJson) => {
         let { block } = responseJson
-        let forgedTS = this.getTSfromEpochStamp(block.timestamp)
+        let forgedTS = getTSfromEpochStamp(block.timestamp)
         block.forgedTS = forgedTS
 
         this.setState({
@@ -164,14 +159,14 @@ class DelegateInfo extends Component {
             <Row>
               <View>
                 <Subtitle>Last forged block</Subtitle>
-                <Text>{state.lastBlockTimeHuman}</Text>
+                <Text>{state.lastBlockTimeHuman} ago</Text>
               </View>
             </Row>
             <Divider styleName="line" />
             <Row>
               <View>
               <Subtitle>Next forged block (estimation)</Subtitle>
-                <Text>{state.nextBlockTimeHuman}</Text>
+                <Text>in {state.nextBlockTimeHuman}</Text>
               </View>
             </Row>
             <Divider styleName="line" />
