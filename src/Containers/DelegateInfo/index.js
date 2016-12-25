@@ -1,6 +1,7 @@
 
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import humanize from 'humanize'
 
 import {
   ScrollView,
@@ -29,30 +30,92 @@ class DelegateInfo extends Component {
     this.state = {
       // delegateName: props.delegateName,
       delegateName: 'doweig',
-      fetching: false,
+      delegateAddress: '',
       account: null,
+      lastBlock: null,
+      firstFetchDone: false,
     }
 
   }
 
   componentDidMount () {
-    this.getDelegateInfo()
+    this.startDelegateInfoRefresher()
+    // this.startLastBlockTimeRefresher()
   }
 
-  getDelegateInfo = () => {
-    const { delegateName } = this.state
+  startLastBlockTimeRefresher = () => {
+    setInterval(() => {
+      if (!this.state.firstFetchDone) {
+        return
+      }
 
-    this.setState({ ...this.state, fetching: true })
+      this.setLastBlockTimeHuman()
+    }, 1000)
+  }
 
-    return fetch('http://10.10.11.56:6040/api/getSearch?q=' + delegateName)
-      .then((response) => response.json())
-      .then((responseJson) => fetch('http://10.10.11.56:6040/api/getAccount?address=' + responseJson.address))
+  setLastBlockTimeHuman = () => {
+    this.setState({
+      ...this.state,
+      lastBlockTimeHuman: humanize.relativeTime(this.state.lastBlock.forgedTS),
+    })
+  }
+
+  getCurrentTS () {
+    return Math.floor(new Date().getTime() / 1000)
+  }
+
+  getTSfromEpochStamp (epochStamp) {
+    return Math.floor(
+      new Date(
+        (((Date.UTC(2016, 4, 24, 17, 0, 0, 0) / 1000) + epochStamp) * 1000)
+      ).getTime() / 1000
+    )
+  }
+
+  startDelegateInfoRefresher = () => {
+    this.setState({ ...this.state, firstFetchDone: true })
+
+    return fetch('http://10.10.11.56:6040/api/getSearch?q=' + this.state.delegateName)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
           ...this.state,
-          fetching: false, 
+          delegateAddress: responseJson.address,
+        })
+
+        setInterval(() => {
+          this.getDelegateInfo(this.state.delegateAddress)
+        }, 1000)
+      })
+      .catch((error) => {
+        console.error(error)
+      })
+  }
+
+  getDelegateInfo = (delegateAddress) => {
+    return fetch('http://10.10.11.56:6040/api/getAccount?address=' + delegateAddress)
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({
+          ...this.state,
           account: responseJson,
+        })
+      })
+      .then((responseJson) => fetch('http://10.10.11.56:6040/api/delegates/getLastBlock?publicKey=' + this.state.account.address))
+      .then((response) => response.json())
+      .then((responseJson) => {
+        let { block } = responseJson
+        let forgedTS = this.getTSfromEpochStamp(block.timestamp)
+        block.forgedTS = forgedTS
+
+        this.setState({
+          ...this.state,
+          lastBlock: block,
+        })
+        this.setLastBlockTimeHuman()
+        this.setState({
+          ...this.state,
+          firstFetchDone: true,
         })
       })
       .catch((error) => {
@@ -61,7 +124,7 @@ class DelegateInfo extends Component {
   }
 
   render() {
-    const { fetching, delegateName, account } = this.state
+    const { fetching, delegateName, account, lastBlockTimeHuman, lastBlock } = this.state
 
     if (fetching || !account) {
       return (
@@ -79,22 +142,40 @@ class DelegateInfo extends Component {
           
           <Screen styleName="paper">
 
+            {/* Forging section */}
             <Row>
               <View>
-                <Subtitle>Address</Subtitle>
-                <Text>{account.address}</Text>
+                <Title>Forging</Title>
+              </View>
+            </Row>
+            <Row>
+              <View>
+                <Subtitle>Last forged block</Subtitle>
+                <Text>{lastBlockTimeHuman}</Text>
               </View>
             </Row>
             <Divider styleName="line" />
-            
             <Row>
               <View>
-                <Subtitle>Public Key</Subtitle>
-                <Text>{account.publicKey}</Text>
+                <Subtitle>Forged</Subtitle>
+                <Text>{account.delegate.forged / 100000000} ARK</Text>
               </View>
             </Row>
             <Divider styleName="line" />
-
+            <Row>
+              <View>
+                <Subtitle>Productivity</Subtitle>
+                <Text>{account.delegate.productivity} %</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+            <Row>
+              <View>
+                <Subtitle>Missed Blocks</Subtitle>
+                <Text>{account.delegate.missedblocks}</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
             <Row>
               <View>
                 <Subtitle>Produced Blocks</Subtitle>
@@ -103,10 +184,51 @@ class DelegateInfo extends Component {
             </Row>
             <Divider styleName="line" />
 
+            {/* Popularity section */}
             <Row>
               <View>
-                <Subtitle>Missed Blocks</Subtitle>
-                <Text>{account.delegate.missedblocks}</Text>
+                <Title>Popularity</Title>
+              </View>
+            </Row>
+            <Row>
+              <View>
+                <Subtitle>Approval</Subtitle>
+                <Text>{account.delegate.approval} %</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+            <Row>
+              <View>
+                <Subtitle>Position</Subtitle>
+                <Text>{account.delegate.rate} / 51</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+
+            {/* Account section */}
+            <Row>
+              <View>
+                <Title>Account</Title>
+              </View>
+            </Row>
+            <Row>
+              <View>
+                <Subtitle>Delegate Name</Subtitle>
+                <Text>{account.delegate.username}</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+            <Row>
+              <View>
+                <Subtitle>Address</Subtitle>
+                <Text>{account.delegate.address}</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+            <Row>
+              <View>
+                <Subtitle>Public Key</Subtitle>
+                <Text>{account.delegate.publicKey}</Text>
               </View>
             </Row>
             <Divider styleName="line" />
