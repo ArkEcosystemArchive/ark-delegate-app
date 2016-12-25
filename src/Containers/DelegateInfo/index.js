@@ -86,17 +86,15 @@ class DelegateInfo extends Component {
           delegateAddress: responseJson.address,
         })
 
-        setInterval(() => {
-          this.getDelegateInfo(this.state.delegateAddress)
-        }, 10 * 1000)
+        setTimeout(this.getDelegateInfo, 10 * 1000)
       })
       .catch((error) => {
         console.error(error)
       })
   }
 
-  getDelegateInfo = (delegateAddress) => {
-    return fetch('http://10.10.11.56:6040/api/getAccount?address=' + delegateAddress)
+  getDelegateInfo = () => {
+    return fetch('http://10.10.11.56:6040/api/getAccount?address=' + this.state.delegateAddress)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -130,6 +128,8 @@ class DelegateInfo extends Component {
           lastFetchAt: new Date,
         })
         this.refreshAtHuman()
+
+        setTimeout(this.getDelegateInfo, 10 * 1000)
       })
       .catch((error) => {
         console.error(error)
@@ -150,14 +150,14 @@ class DelegateInfo extends Component {
     return (
       <Screen>
         <NavigationBar title={state.delegateName} />
-        <ScrollView>
+        <ScrollView style={{ marginTop: -45 }}>
           
           <Screen styleName="paper">
 
             {/* Debug helper */}
             <Row>
               <View>
-                <Text style={{ fontSize: 10 }}>(Last time refreshed {state.lastFetchAtHuman} ago)</Text>
+                <Text style={{ fontSize: 12 }}>Refreshed {state.lastFetchAtHuman} ago)</Text>
               </View>
             </Row>
             <Divider styleName="line" />
