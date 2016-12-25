@@ -86,7 +86,7 @@ class DelegateInfo extends Component {
           ...this.state,
           delegateAddress: responseJson.address,
         })
-        setTimeout(this.getDelegateInfo, 10 * 1000)
+        this.getDelegateInfo()
       })
       .catch((error) => {
         console.error(error)
@@ -114,7 +114,7 @@ class DelegateInfo extends Component {
           lastBlock: lastBlock,
         })
       })
-      .then((responseJson) => fetch('/api/delegates/getNextForgers'))
+      .then((responseJson) => fetch(Config.explorerURL + '/api/delegates/getNextForgers'))
       .then((response) => response.json())
       .then((responseJson) => {
         const { delegates } = responseJson
