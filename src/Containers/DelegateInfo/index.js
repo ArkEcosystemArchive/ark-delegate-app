@@ -85,7 +85,7 @@ class DelegateInfo extends Component {
 
         setInterval(() => {
           this.getDelegateInfo(this.state.delegateAddress)
-        }, 5 * 1000)
+        }, 10 * 1000)
       })
       .catch((error) => {
         console.error(error)
