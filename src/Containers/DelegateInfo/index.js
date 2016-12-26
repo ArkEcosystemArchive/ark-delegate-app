@@ -102,7 +102,7 @@ class DelegateInfo extends Component {
           account: responseJson,
         })
       })
-      .then((responseJson) => fetch(Config.explorerURL + '/api/delegates/getLastBlocks?publicKey=' + this.state.account.publicKey))
+      .then((responseJson) => fetch(Config.explorerURL + '/api/delegates/getLastBlocks?publicKey=' + this.state.account.publicKey + '&limit=1&offset=0&orderBy=height:desc'))
       .then((response) => response.json())
       .then((responseJson) => {
         const { blocks } = responseJson
