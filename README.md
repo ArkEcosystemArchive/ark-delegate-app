@@ -4,7 +4,7 @@ Make sure your delegate is always forging on the go!
 
 # Screenshots
 
-![](hhttps://raw.githubusercontent.com/ArkEcosystem/ark-delegate-app/master/screenshots/demo.png)
+![Demo screenshot](https://raw.githubusercontent.com/ArkEcosystem/ark-delegate-app/master/screenshots/demo.png)
 
 # Installation
 
