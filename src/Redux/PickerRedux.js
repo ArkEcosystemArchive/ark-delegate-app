@@ -17,13 +17,10 @@ const pickerSearch = (delegateName) => {
       .then((response) => response.json())
       .then((responseJson) => {
         address = responseJson.address
-        console.log(Config.explorerURL + '/api/accounts/getPublicKey?address=' + address)
-        
-        return fetch(Config.explorerURL + '/api/accounts/getPublicKey?address=' + address)
+        return fetch(Config.explorerURL + '/api/getAccount?address=' + address)
       })
       .then((response) => response.json())
       .then((responseJson) => {
-        console.log(responseJson)
         pubKey = responseJson.publicKey
         dispatch(Creators.pickerSuccess(address, pubKey))
       })
