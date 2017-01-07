@@ -157,7 +157,7 @@ class DelegateInfo extends Component {
             {/* Debug helper */}
             <Row>
               <View>
-                <Text style={{ fontSize: 12 }}>Refreshed {state.lastFetchAtHuman} ago)</Text>
+                <Text style={{ fontSize: 12 }}>(Refreshed {state.lastFetchAtHuman} ago)</Text>
               </View>
             </Row>
             <Divider styleName="line" />
