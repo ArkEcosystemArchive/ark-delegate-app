@@ -8,7 +8,7 @@ const NAV_POP = 'NAV_POP'
 const initialNavState = {
   index: 0,
   routes: [
-    { key: 'delegate-info' },
+    { key: 'delegate-picker' },
   ],
 }
 
@@ -29,6 +29,7 @@ function navigationState(state = initialNavState, action) {
 
 export default combineReducers({
   navigationState,
+  picker: require('./PickerRedux').reducer,
 })
 
 export function navigatePush(route, props) {

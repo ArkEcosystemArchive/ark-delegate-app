@@ -26,8 +26,8 @@ class RootContainer extends Component {
   renderScene (props) {
     const { route } = props.scene
     let Screen = null
-
-    switch (route.key) {
+    switch (route.
+    key) {
       case 'delegate-picker':
         Screen = DelegatePicker
         break

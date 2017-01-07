@@ -16,7 +16,8 @@ import {
 } from '@shoutem/ui'
 import { NavigationBar } from '@shoutem/ui/navigation'
 
-import { navigatePush } from '../../Redux'
+import { navigatePush, navigatePop } from '../../Redux'
+import PickerActions from '../../Redux/PickerRedux'
 
 class DelegatePicker extends Component {
 
@@ -26,14 +27,29 @@ class DelegatePicker extends Component {
 
   constructor (props) {
     super(props)
-
     this.state = {
-      delegateName: ''
+      delegateName: 'doweig'
+    }
+    this.isAttempting = false
+  }
+
+  componentWillReceiveProps (newProps) {
+    this.forceUpdate()
+    // Did the login attempt complete?
+    if (this.isAttempting && !newProps.fetching) {
+      navigatePop()
     }
   }
 
   handleNameSubmit = () => {
-    this.props.nameSubmit(this.state.delegateName)
+    const { delegateName } = this.state
+
+    if (!delegateName.trim()) {
+      return this.state
+    }
+
+    this.isAttempting = true
+    this.props.pickerSearch(delegateName)
   }
 
   onDelegateNameChange = (delegateName) => {
@@ -44,6 +60,7 @@ class DelegatePicker extends Component {
 
   render () {
     const { handleNameSubmit } = this.props;
+    const { delegateName } = this.state;
 
     return (
       <Screen>
@@ -59,6 +76,7 @@ class DelegatePicker extends Component {
             // maxLength={12}
             // onSubmitEditing={this.handleNameSubmit}
             onEndEditing={this.handleNameSubmit}
+            value={delegateName}
           />
           <Divider styleName="line" />
           <Button>
@@ -72,12 +90,14 @@ class DelegatePicker extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    fetching: state.picker.fetching
+  }
+}
+
 const mapDispatchToProps = (dispatch) => ({
-  nameSubmit: (delegateName) => {
-    dispatch(navigatePush({
-      key: 'delegate-info',
-    }, { delegateName }))
-  },
+  pickerSearch: (delegateName) => dispatch(PickerActions.pickerSearch(delegateName))
 })
 
-export default connect(null, mapDispatchToProps)(DelegatePicker)
+export default connect(mapStateToProps, mapDispatchToProps)(DelegatePicker)
