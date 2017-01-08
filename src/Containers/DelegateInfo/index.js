@@ -18,9 +18,13 @@ import {
 } from '@shoutem/ui'
 import { NavigationBar } from '@shoutem/ui/navigation'
 
+import ReactMixin from 'react-mixin'
+import TimerMixin from 'react-timer-mixin'
+
 import CONST from '../../Helpers/Const'
 import Config from '../../Config'
 import { getTSFromEpochStamp, getDiffInSeconds } from '../../Helpers/Date'
+import { navigatePush, navigatePop } from '../../Redux'
 
 class DelegateInfo extends Component {
 
@@ -36,12 +40,7 @@ class DelegateInfo extends Component {
       lastFetchAt: 0,
       lastFetchAtHuman: '',
 
-      // delegateName: props.delegateName,
-      delegateName: 'doweig',
-
-      delegateAddress: '',
       account: null,
-
       lastBlock: null,
       lastBlockAtHuman: '',
 
@@ -51,8 +50,11 @@ class DelegateInfo extends Component {
   }
 
   componentDidMount () {
-    this.startDelegateInfoRefresher()
-    this.startLastBlockTimeRefresher()
+    this.getDelegateInfo()
+    .then(() => {
+      this.setInterval(this.refreshAtHuman, 1000)
+      this.setInterval(this.getDelegateInfo, 10 * 1000)
+    })
   }
 
   startLastBlockTimeRefresher = () => {
@@ -78,23 +80,8 @@ class DelegateInfo extends Component {
     })
   }
 
-  startDelegateInfoRefresher = () => {
-    return fetch(Config.explorerURL + '/api/getSearch?q=' + this.state.delegateName)
-      .then((response) => response.json())
-      .then((responseJson) => {
-        this.setState({
-          ...this.state,
-          delegateAddress: responseJson.address,
-        })
-        this.getDelegateInfo()
-      })
-      .catch((error) => {
-        console.error(error)
-      })
-  }
-
   getDelegateInfo = () => {
-    return fetch(Config.explorerURL + '/api/getAccount?address=' + this.state.delegateAddress)
+    return fetch(Config.explorerURL + '/api/getAccount?address=' + this.props.address)
       .then((response) => response.json())
       .then((responseJson) => {
         this.setState({
@@ -128,8 +115,6 @@ class DelegateInfo extends Component {
           lastFetchAt: new Date,
         })
         this.refreshAtHuman()
-
-        setTimeout(this.getDelegateInfo, 10 * 1000)
       })
       .catch((error) => {
         console.error(error)
@@ -149,7 +134,7 @@ class DelegateInfo extends Component {
 
     return (
       <Screen>
-        <NavigationBar title={state.delegateName} />
+        <NavigationBar title={this.props.delegateName} />
         <ScrollView style={{ marginTop: -45 }}>
           
           <Screen styleName="paper">
@@ -265,70 +250,22 @@ class DelegateInfo extends Component {
         </ScrollView>
       </Screen>
     )
-    //     <ScrollView>
-    //       <Image
-    //         styleName="large-portrait hero"
-    //         animationName="hero"
-    //         source={{ uri: restaurant.image && restaurant.image.url }}
-    //         key={restaurant.name}
-    //       >
-    //         <Tile animationName="hero">
-    //           <Title>{restaurant.name}</Title>
-    //           <Subtitle>{restaurant.address}</Subtitle>
-    //         </Tile>
-    //       </Image>
-
-    //       <Screen styleName="paper">
-    //         <Text styleName="md-gutter multiline">{restaurant.description}</Text>
-
-    //         <Divider styleName="line" />
-
-    //         <Row>
-    //           <Icon name="laptop" />
-    //           <View styleName="vertical">
-    //             <Subtitle>Visit webpage</Subtitle>
-    //             <Text numberOfLines={1}>{restaurant.url}</Text>
-    //           </View>
-    //           <Icon styleName="disclosure" name="right-arrow" />
-    //         </Row>
-
-    //         <Divider styleName="line" />
-
-    //         <Row>
-    //           <Icon name="pin" />
-    //           <View styleName="vertical">
-    //             <Subtitle>Address</Subtitle>
-    //             <Text numberOfLines={1}>{restaurant.address}</Text>
-    //           </View>
-    //           <Icon styleName="disclosure" name="right-arrow" />
-    //         </Row>
-
-    //         <Divider styleName="line" />
-
-    //         <Row>
-    //           <Icon name="email" />
-    //           <View styleName="vertical">
-    //             <Subtitle>Email</Subtitle>
-    //             <Text numberOfLines={1}>{restaurant.mail}</Text>
-    //           </View>
-    //         </Row>
-
-    //         <Divider styleName="line" />
-    //       </Screen>
-    //     </ScrollView>
-    //   </Screen>
-    // )
   }
 }
+
+ReactMixin.onClass(DelegateInfo, TimerMixin)
 
 const mapStateToProps = (state) => {
   return {
-    // delegateName: state.navigationState.routes[1].props.delegateName,
+    delegateName: state.picker.delegateName,
+    address: state.picker.address,
+    pubKey: state.picker.pubKey,
   }
 }
 
-// const mapDispatchToProps = {
-//   onNavigateBack: navigatePop,
-// }
+const mapDispatchToProps = {
+  navigatePop: () => dispatch(navigatePop()),
+}
+
 
 export default connect(mapStateToProps, null)(DelegateInfo)
