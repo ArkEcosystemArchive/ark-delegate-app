@@ -13,6 +13,7 @@ import {
   TextInput,
   Button,
   Text,
+  Spinner,
 } from '@shoutem/ui'
 import { NavigationBar } from '@shoutem/ui/navigation'
 
@@ -30,14 +31,15 @@ class DelegatePicker extends Component {
     this.state = {
       delegateName: 'doweig'
     }
-    this.isAttempting = false
+    // this.isAttempting = false
   }
 
   componentWillReceiveProps (newProps) {
-    this.forceUpdate()
+    // this.forceUpdate()
     // Did the login attempt complete?
-    if (this.isAttempting && !newProps.fetching) {
-      navigatePop()
+    // if (this.isAttempting && !newProps.fetching) {
+    if (!newProps.fetching && newProps.pubKey) {
+      this.props.navigatePush('delegate-info', this.state.delegateName)
     }
   }
 
@@ -48,7 +50,7 @@ class DelegatePicker extends Component {
       return this.state
     }
 
-    this.isAttempting = true
+    // this.isAttempting = true
     this.props.pickerSearch(delegateName)
   }
 
@@ -59,13 +61,19 @@ class DelegatePicker extends Component {
   }
 
   render () {
-    const { handleNameSubmit } = this.props;
-    const { delegateName } = this.state;
+    const { handleNameSubmit, fetching, pickerError } = this.props
+    const { delegateName } = this.state
+
+    console.log(pickerError)
 
     return (
       <Screen>
         <NavigationBar title="Who do you want to stalk?" />
         <ScrollView>
+
+          {pickerError ? (
+            <Text style={{ padding: 10, color: 'red' }}>{pickerError}</Text>
+          ) : null}
 
           <TextInput 
             onChangeText={this.onDelegateNameChange} 
@@ -79,8 +87,13 @@ class DelegatePicker extends Component {
             value={delegateName}
           />
           <Divider styleName="line" />
+
           <Button>
-            <Text>Go</Text>
+            { fetching ? (
+              <Spinner />
+            ) : (
+              <Text>Go</Text>
+            ) }
           </Button>
           <Divider styleName="line" />
 
@@ -92,12 +105,15 @@ class DelegatePicker extends Component {
 
 const mapStateToProps = (state) => {
   return {
-    fetching: state.picker.fetching
+    fetching: state.picker.fetching,
+    pickerError: state.picker.error,
+    pubKey: state.picker.pubKey,
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  pickerSearch: (delegateName) => dispatch(PickerActions.pickerSearch(delegateName))
+  pickerSearch: (delegateName) => dispatch(PickerActions.pickerSearch(delegateName)),
+  navigatePush: (key, title) => dispatch(navigatePush({ key, title })),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(DelegatePicker)

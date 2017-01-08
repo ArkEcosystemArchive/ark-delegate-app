@@ -16,6 +16,9 @@ const pickerSearch = (delegateName) => {
     return fetch(Config.explorerURL + '/api/getSearch?q=' + delegateName)
       .then((response) => response.json())
       .then((responseJson) => {
+        if (!responseJson.success) {
+          throw responseJson.error
+        }
         address = responseJson.address
         return fetch(Config.explorerURL + '/api/getAccount?address=' + address)
       })
@@ -25,7 +28,6 @@ const pickerSearch = (delegateName) => {
         dispatch(Creators.pickerSuccess(address, pubKey))
       })
       .catch((error) => {
-        console.log(error)
         dispatch(Creators.pickerFailure(error))
       })
   }
