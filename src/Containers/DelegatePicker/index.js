@@ -29,7 +29,7 @@ class DelegatePicker extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      delegateName: 'doweig'
+      searchName: 'canna'
     }
     // this.isAttempting = false
   }
@@ -38,33 +38,31 @@ class DelegatePicker extends Component {
     // this.forceUpdate()
     // Did the login attempt complete?
     // if (this.isAttempting && !newProps.fetching) {
-    if (!newProps.fetching && newProps.pubKey) {
-      this.props.navigatePush('delegate-info', this.state.delegateName)
+    if (!newProps.fetching && newProps.delegateName) {
+      this.props.navigatePush('delegate-info', newProps.delegateName)
     }
   }
 
   handleNameSubmit = () => {
-    const { delegateName } = this.state
+    const { searchName } = this.state
 
-    if (!delegateName.trim()) {
+    if (!searchName.trim()) {
       return this.state
     }
 
     // this.isAttempting = true
-    this.props.pickerSearch(delegateName)
+    this.props.pickerSearch(searchName)
   }
 
-  onDelegateNameChange = (delegateName) => {
+  onSearchNameChange = (searchName) => {
     this.setState({
-      delegateName
+      searchName
     })
   }
 
   render () {
     const { handleNameSubmit, fetching, pickerError } = this.props
-    const { delegateName } = this.state
-
-    console.log(pickerError)
+    const { searchName } = this.state
 
     return (
       <Screen>
@@ -76,7 +74,7 @@ class DelegatePicker extends Component {
           ) : null}
 
           <TextInput 
-            onChangeText={this.onDelegateNameChange} 
+            onChangeText={this.onSearchNameChange} 
             placeholder={'Delegate name'}
             autoCapitalize="none"
             autoCorrect={false}
@@ -84,7 +82,7 @@ class DelegatePicker extends Component {
             // maxLength={12}
             // onSubmitEditing={this.handleNameSubmit}
             onEndEditing={this.handleNameSubmit}
-            value={delegateName}
+            value={searchName}
           />
           <Divider styleName="line" />
 
@@ -107,12 +105,12 @@ const mapStateToProps = (state) => {
   return {
     fetching: state.picker.fetching,
     pickerError: state.picker.error,
-    pubKey: state.picker.pubKey,
+    delegateName: state.picker.delegateName,
   }
 }
 
 const mapDispatchToProps = (dispatch) => ({
-  pickerSearch: (delegateName) => dispatch(PickerActions.pickerSearch(delegateName)),
+  pickerSearch: (searchName) => dispatch(PickerActions.pickerSearch(searchName)),
   navigatePush: (key, title) => dispatch(navigatePush({ key, title })),
 })
 

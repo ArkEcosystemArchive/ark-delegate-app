@@ -6,14 +6,15 @@ import Config from '../Config'
 
 /* ------------- Types and Action Creators ------------- */
 
-const pickerSearch = (delegateName) => {
+const pickerSearch = (seachName) => {
   return (dispatch) => {
+    let delegateName = ''
     let address = ''
     let pubKey = ''
 
-    dispatch(Creators.pickerRequest(delegateName))
+    dispatch(Creators.pickerRequest(seachName))
 
-    return fetch(Config.explorerURL + '/api/getSearch?q=' + delegateName)
+    return fetch(Config.explorerURL + '/api/getSearch?q=' + seachName)
       .then((response) => response.json())
       .then((responseJson) => {
         if (!responseJson.success) {
@@ -24,8 +25,9 @@ const pickerSearch = (delegateName) => {
       })
       .then((response) => response.json())
       .then((responseJson) => {
+        delegateName = responseJson.delegate.username
         pubKey = responseJson.publicKey
-        dispatch(Creators.pickerSuccess(address, pubKey))
+        dispatch(Creators.pickerSuccess(delegateName, address, pubKey))
       })
       .catch((error) => {
         dispatch(Creators.pickerFailure(error))
@@ -35,8 +37,8 @@ const pickerSearch = (delegateName) => {
 
 const { Types, Creators } = createActions({
   pickerSearch,
-  pickerRequest: ['delegateName'],
-  pickerSuccess: ['address', 'pubKey'],
+  pickerRequest: ['searchName'],
+  pickerSuccess: [ 'delegateName', 'address', 'pubKey'],
   pickerFailure: ['error'],
   pickerClear: null
 })
@@ -57,17 +59,16 @@ export const INITIAL_STATE = Immutable({
 /* ------------- Reducers ------------- */
 
 // we're attempting to get the delegate info
-export const request = (state: Object, { delegateName }: Object) => {
+export const request = (state: Object, { searchName }: Object) => {
   return state.merge({ 
     fetching: true,
-    delegateName
   })
 }
 
 // we've successfully logged in
-export const success = (state: Object, { address, pubKey }: Object) => {
-  console.log('success!', address, pubKey)
-  return state.merge({ fetching: false, error: null, address, pubKey })
+export const success = (state: Object, { delegateName, address, pubKey }: Object) => {
+  console.log('success!', delegateName, address, pubKey)
+  return state.merge({ fetching: false, error: null, delegateName, address, pubKey })
 }
 
 // we've had a problem logging in
