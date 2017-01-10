@@ -147,7 +147,7 @@ class DelegateInfo extends Component {
             </Row>
             <Divider styleName="line" />
 
-            {/* Forging section */}
+            {/* Forging Section */}
             <Row>
               <View>
                 <Title>Forging</Title>
@@ -196,7 +196,7 @@ class DelegateInfo extends Component {
             </Row>
             <Divider styleName="line" />
 
-            {/* Popularity section */}
+            {/* Popularity Section */}
             <Row>
               <View>
                 <Title>Popularity</Title>
@@ -217,7 +217,7 @@ class DelegateInfo extends Component {
             </Row>
             <Divider styleName="line" />
 
-            {/* Account section */}
+            {/* Account Section */}
             <Row>
               <View>
                 <Title>Account</Title>
@@ -244,6 +244,45 @@ class DelegateInfo extends Component {
               </View>
             </Row>
             <Divider styleName="line" />
+
+            {/* Voted By Section */}
+            <Row>
+              <View>
+                <Title>Voted By</Title>
+              </View>
+            </Row>
+            {state.account.voters.map((voter, i) => {
+              return (
+                <View key={voter.publicKey}>
+                  <Row>
+                    <View>
+                      <Subtitle>{voter.username || voter.address}</Subtitle>
+                      <Text>{voter.balance / 100000000} ARK</Text>
+                    </View>
+                  </Row>
+                  <Divider styleName="line" />
+                </View>
+              )
+            })}
+
+            {/* Voted For Section */}
+            <Row>
+              <View>
+                <Title>Voted For</Title>
+              </View>
+            </Row>
+            {state.account.votes.map((votee, i) => {
+              return (
+                <View key={votee.publicKey}>
+                  <Row>
+                    <View>
+                      <Subtitle>{votee.username || votee.address}</Subtitle>
+                    </View>
+                  </Row>
+                  <Divider styleName="line" />
+                </View>
+              )
+            })}
 
           </Screen>
 
