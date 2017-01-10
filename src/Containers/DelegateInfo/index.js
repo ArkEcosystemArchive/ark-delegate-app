@@ -176,8 +176,8 @@ class DelegateInfo extends Component {
             <Divider styleName="line" />
             <Row>
               <View>
-                <Subtitle>Productivity</Subtitle>
-                <Text>{state.account.delegate.productivity} %</Text>
+                <Subtitle>Productivity (Blocks Missed / Produced)</Subtitle>
+                <Text>{state.account.delegate.productivity} % ({state.account.delegate.missedblocks} / {state.account.delegate.producedblocks})</Text>
               </View>
             </Row>
             <Divider styleName="line" />
