@@ -30,7 +30,7 @@ const pickerSearch = (seachName) => {
         dispatch(Creators.pickerSuccess(delegateName, address, pubKey))
       })
       .catch((error) => {
-        dispatch(Creators.pickerFailure(error))
+        dispatch(Creators.pickerFailure(error.message || error))
       })
   }
 }
