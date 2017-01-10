@@ -29,15 +29,14 @@ class DelegatePicker extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      searchName: 'canna'
+      searchName: 'doweig'
     }
-    // this.isAttempting = false
   }
 
   componentWillReceiveProps (newProps) {
     // this.forceUpdate()
-    // Did the login attempt complete?
-    // if (this.isAttempting && !newProps.fetching) {
+
+    // Did the search attempt complete?
     if (!newProps.fetching && newProps.delegateName) {
       this.props.navigatePush('delegate-info', newProps.delegateName)
     }
@@ -50,7 +49,6 @@ class DelegatePicker extends Component {
       return this.state
     }
 
-    // this.isAttempting = true
     this.props.pickerSearch(searchName)
   }
 
