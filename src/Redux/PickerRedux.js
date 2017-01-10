@@ -49,11 +49,11 @@ export default Creators
 /* ------------- Initial State ------------- */
 
 export const INITIAL_STATE = Immutable({
-  delegateName: null,
-  error: null,
   fetching: false,
+  delegateName: null,
   address: null,
   pubKey: null,
+  error: null,
 })
 
 /* ------------- Reducers ------------- */
@@ -62,6 +62,9 @@ export const INITIAL_STATE = Immutable({
 export const request = (state: Object, { searchName }: Object) => {
   return state.merge({ 
     fetching: true,
+    delegateName: null,
+    address: null,
+    pubKey: null,
   })
 }
 
