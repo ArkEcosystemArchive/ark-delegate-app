@@ -232,6 +232,13 @@ class DelegateInfo extends Component {
             <Divider styleName="line" />
             <Row>
               <View>
+                <Subtitle>Balance</Subtitle>
+                <Text>{state.account.balance / 100000000} ARK</Text>
+              </View>
+            </Row>
+            <Divider styleName="line" />
+            <Row>
+              <View>
                 <Subtitle>Address</Subtitle>
                 <Text>{state.account.delegate.address}</Text>
               </View>
