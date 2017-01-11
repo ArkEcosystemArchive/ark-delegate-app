@@ -181,20 +181,6 @@ class DelegateInfo extends Component {
               </View>
             </Row>
             <Divider styleName="line" />
-            <Row>
-              <View>
-                <Subtitle>Missed Blocks</Subtitle>
-                <Text>{state.account.delegate.missedblocks}</Text>
-              </View>
-            </Row>
-            <Divider styleName="line" />
-            <Row>
-              <View>
-                <Subtitle>Produced Blocks</Subtitle>
-                <Text>{state.account.delegate.producedblocks}</Text>
-              </View>
-            </Row>
-            <Divider styleName="line" />
 
             {/* Popularity Section */}
             <Row>
