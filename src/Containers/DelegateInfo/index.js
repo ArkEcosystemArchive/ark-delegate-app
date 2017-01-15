@@ -244,7 +244,7 @@ class DelegateInfo extends Component {
                 <Title>Voted By</Title>
               </View>
             </Row>
-            {state.account.voters.map((voter, i) => {
+            {state.account.voters ? state.account.voters.map((voter, i) => {
               return (
                 <View key={voter.publicKey}>
                   <Row>
@@ -256,7 +256,16 @@ class DelegateInfo extends Component {
                   <Divider styleName="line" />
                 </View>
               )
-            })}
+            }) : (
+              <View>
+                <Row>
+                  <View>
+                    <Text>Empty</Text>
+                  </View>
+                </Row>
+                <Divider styleName="line" />
+              </View>
+            )}
 
             {/* Voted For Section */}
             <Row>
@@ -264,7 +273,7 @@ class DelegateInfo extends Component {
                 <Title>Voted For</Title>
               </View>
             </Row>
-            {state.account.votes.map((votee, i) => {
+            {state.account.votes ? state.account.votes.map((voter, i) => {
               return (
                 <View key={votee.publicKey}>
                   <Row>
@@ -275,7 +284,16 @@ class DelegateInfo extends Component {
                   <Divider styleName="line" />
                 </View>
               )
-            })}
+            }) : (
+              <View>
+                <Row>
+                  <View>
+                    <Text>Empty</Text>
+                  </View>
+                </Row>
+                <Divider styleName="line" />
+              </View>
+            )}
 
           </Screen>
 
