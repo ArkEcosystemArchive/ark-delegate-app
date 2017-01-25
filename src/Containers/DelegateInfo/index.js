@@ -273,7 +273,7 @@ class DelegateInfo extends Component {
                 <Title>Voted For</Title>
               </View>
             </Row>
-            {state.account.votes ? state.account.votes.map((voter, i) => {
+            {state.account.votes ? state.account.votes.map((votee, i) => {
               return (
                 <View key={votee.publicKey}>
                   <Row>
